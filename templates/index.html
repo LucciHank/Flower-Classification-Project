@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flower Classification</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Flower Classification using VGG16</h1>
+    <form id="upload-form">
+        <input type="file" id="image-input" name="file" accept="image/*" required>
+        <button type="submit">Upload and Predict</button>
+    </form>
+    <div id="result"></div>
+
+    <script>
+        document.getElementById("upload-form").onsubmit = async function(e) {
+            e.preventDefault();
+
+            const fileInput = document.getElementById("image-input");
+            const formData = new FormData();
+            formData.append("file", fileInput.files[0]);
+
+            const response = await fetch("/predict", {
+                method: "POST",
+                body: formData
+            });
+            
+            const resultDiv = document.getElementById("result");
+            if (response.ok) {
+                const data = await response.json();
+                resultDiv.innerHTML = `<h2>Flower: ${data.name}</h2><p>${JSON.stringify(data.details)}</p>`;
+            } else {
+                resultDiv.innerHTML = "Error in prediction.";
+            }
+        };
+    </script>
+</body>
+</html>
